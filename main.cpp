@@ -21,70 +21,22 @@ using namespace std;
 
 
 
-// int issue(ReservationStation object){
-//     if()
-//     //comdition for FP
-//     if(){
-
-//     }
-//     //condition for Lw
-//     if(){
-
-//     }
-//     //condition for Sw
-//     if(){
-
-//     }
-//     //at the end return clk
-// };
-
-
-// int execute(){
-//     //condition for FP
-//     if(){
-        
-//     }
-//     //condition for Lw
-//     if(){
-
-//     }
-//     //condition for Sw
-//     if(){
-
-//     }
-//     //return clk
-// };
-
-// int writeBack(){
-//     //condition for FP and lw
-//     if(){
-
-//     }
-//     //condition for Sw 
-//     if(){
-
-//     }
-//     //return clk
-// };
-
-
-
 
 /*
 	Function: Check operands ready
 	Issue FP
 */
-void check_operands_ready(InstructionAdd inst_add_arr,ReservationStation rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
+void check_operands_ready(InstructionAdd *inst_add_arr,ReservationStation *rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
 	//not ready
-	if (RegStats[inst_add_arr.get_rs1_name()] != "0"){
-			rs_arr.setQj(RegStats[inst_add_arr.get_rs1_name()]);
+	if (RegStats[inst_add_arr->get_rs1_name()] != "0"){
+			rs_arr->setQj(RegStats[inst_add_arr->get_rs1_name()]);
 	
 						
 	//ready
 	} else {
-			rs_arr.setVj(RegFile[inst_add_arr.get_rs1_name()]);
-			rs_arr.setQj("0");
-			cout << "from inside: " << rs_arr.getVj() << endl;
+			rs_arr->setVj(RegFile[inst_add_arr->get_rs1_name()]);
+			rs_arr->setQj("0");
+			cout << "from inside: " << rs_arr->getVj() << endl;
 			
 	}
 		
@@ -287,11 +239,17 @@ int main(int argC, char **argv) {
         				general_inst_map[issue_counter].get_instruction_add().set_reservation_station(add); //put it in an array
         				general_inst_map[issue_counter].get_instruction_add().set_status(1); //issued
         				general_inst_map[issue_counter].get_instruction_add().set_issue_clk(main_clk); //set issue clk
-						//cout << "before: " << rs_arr[i].getVj() << endl;
+						
 						
 						//checks operands ready or not
-						check_operands_ready(general_inst_map[issue_counter].get_instruction_add(), general_inst_map[issue_counter].get_instruction_add().get_reservation_station(), RegStats, RegFile);
-						//cout << "after: " << rs_arr[i].getVj() << endl;	
+						InstructionAdd temp_inst = general_inst_map[issue_counter].get_instruction_add();
+						ReservationStation temp_rs = general_inst_map[issue_counter].get_instruction_add().get_reservation_station();
+						cout << "before: " << temp_rs.getVj() << endl;
+						check_operands_ready(&temp_inst, &temp_rs, RegStats, RegFile);
+						general_inst_map[issue_counter].set_instruction_add(temp_inst);
+						general_inst_map[issue_counter].get_instruction_add().set_reservation_station(temp_rs);
+						cout << "Yo: " << general_inst_map[issue_counter].get_instruction_add().get_reservation_station().getVj() << endl;
+						cout << "after: " << temp_rs.getVj() << endl;	
 				
 						//before execute
 						}
