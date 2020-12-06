@@ -15,8 +15,6 @@
 
 #include "GeneralInstruction.h"
 
-
-
 using namespace std;
 
 
@@ -74,7 +72,7 @@ using namespace std;
 	Function: Check operands ready
 	Issue FP
 */
-void check_operands_ready(InstructionAdd inst_add_arr,ReservationStation rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
+void check_operands_ready(InstructionAdd &inst_add_arr,ReservationStation &rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
 	//not ready
 	if (RegStats[inst_add_arr.get_rs1_name()] != "0"){
 			rs_arr.setQj(RegStats[inst_add_arr.get_rs1_name()]);
@@ -105,7 +103,8 @@ int main(int argC, char **argv) {
     ReservationStation add2;
     ReservationStation div;
 
-
+	//map a counter to a general instruction
+	map<int, GeneralInstruction> general_inst_map;
 
 
 	map<string, string> RegStats;
@@ -157,15 +156,6 @@ int main(int argC, char **argv) {
     inst_type["beq"] = 3;
     inst_type["lw"] = 4;
     inst_type["sw"] = 5;
-
-
-
-
-
-	//map a counter to a general instruction
-	map<int, GeneralInstruction> general_inst_map;
-
-
 
 	vector <vector <string> > my_inst;
   		 ifstream instruction_file; //keywords
@@ -235,7 +225,7 @@ int main(int argC, char **argv) {
         		
         		//instantiate an object from general instruction class and associate the add instruction to it and set add flag
         
-        		GeneralInstruction general_instruction;
+        		GeneralInstruction general_instruction = GeneralInstruction();
         		general_instruction.set_instruction_add(addInst);
         		general_instruction.set_add_flag();
         		
@@ -260,8 +250,6 @@ int main(int argC, char **argv) {
        
         }
         */
-        
-
         int main_clk = 1;
         ResStatHandler RS_handler;
         //Dynamic array for instruction objects
@@ -272,12 +260,63 @@ int main(int argC, char **argv) {
 		int issue_counter = 0;
         while(true){
        		bool finish_flag = true;
+        	/*
+        	//inner loop
+        		First step
+        		check instructions status
+        		In the first step we will check on any other state other than issue
+        		The issuing will be done in the second step
+        	*/
+        	
+
+        	/*
+        	for(int i = 0; i < inst_add_counter; i++){
+        		int current_status = inst_add_arr[i].get_status();
+        		
+        		//before issue
+        		if (current_status == 0){
+        		*/
+        			//check issue conditions
+        			//Empty RS
+        			/*
+        			bool add_avail = RS_handler.is_add_available();
+
+					//if reservation station available
+        			if (add_avail) {
+        				ReservationStation add = ReservationStation(); //instantiate reservation stations
+        				rs_arr[i] = add; //put it in an array
+        				inst_add_arr[i].set_status(1); //issue
+        				inst_add_arr[i].set_issue_clk(main_clk); //set issue clk
+						cout << "before: " << rs_arr[i].getVj() << endl;
+						
+						//checks operands ready or not
+						check_operands_ready(inst_add_arr[i], rs_arr[i], RegStats, RegFile);
+						cout << "after: " << rs_arr[i].getVj() << endl;
+						
+			
+					
+				
+						//before execute
+						}
+					} else if (current_status == 1){
+			
+					}
+        	
+        	*/
+        	/*
+        		Second Step
+        		check issue condition for a new instruction
+        		
+        		Another importnat flag to stop the infinite loop [Logic to break the infinite loop]
+        		loop over the arrays of the instructions, check their status, if all instructions finished, then set a flag to break the while loop
+        	*/
+        	
         	
         	int my_type = general_inst_map[issue_counter].determine_type();
         	switch(my_type){
         		case (0): //add
         			//check issue for FP instruction
-        			{
+        			
         			bool add_avail = RS_handler.is_add_available(); //check if RS empty
 
 					//if reservation station available
@@ -291,18 +330,52 @@ int main(int argC, char **argv) {
 						
 						//checks operands ready or not
 						check_operands_ready(general_inst_map[issue_counter].get_instruction_add(), general_inst_map[issue_counter].get_instruction_add().get_reservation_station(), RegStats, RegFile);
-						//cout << "after: " << rs_arr[i].getVj() << endl;	
+						//cout << "after: " << rs_arr[i].getVj() << endl;
+						
+			
+					
 				
 						//before execute
 						}
 
         			break;
-  }
+        			/*
+        		case (1): //div
+        			break;
+        		case (2): //jal
+        			break;
+        		case (3): //beq
+        			break;
+        		case (4): //load
+        			break;
+        		case (5): //store
+        			break;
+        			*/
         		default:
         			cout << "Type not defined" << endl;
         			exit(0);
         	}
-
+        	
+        	/*
+        		Logic to brak the infinite while loop
+        	*/
+        	//check add instructions array
+        	/*
+        	for (int i = 0; i < inst_add_counter; i++){
+        		int status = inst_add_arr[i].get_status();
+        		if (status != 3){
+        			finish_flag = false;
+        		}
+        	}
+        	*/
+        
+		
+	}
+	/*
+		if (finish_flag){
+			break;
+		}
+		*/
 		main_clk++;
 		very_temp--;
 		if (very_temp == 0){
@@ -316,7 +389,10 @@ int main(int argC, char **argv) {
 		inst_add_arr[i].print_clk();	
 	}
         
-
+  
+        
+      
+ 
  
 }
 

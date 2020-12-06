@@ -1,7 +1,13 @@
 #include "InstructionAdd.h"
 
+
 InstructionAdd::InstructionAdd(){
 	status = 0;
+}
+
+//get reservation station
+ ReservationStation InstructionAdd::get_reservation_station(){
+       return rs;
 }
 
  void InstructionAdd::setClk(int c){
@@ -111,6 +117,10 @@ InstructionAdd::InstructionAdd(){
  
  void InstructionAdd::print_clk(){
  	cout << "issue clk: " << get_issue_clk() << endl;
+ }
+ 
+ void InstructionAdd::set_reservation_station(ReservationStation _rs){
+ 	rs = _rs;
  }
  
  

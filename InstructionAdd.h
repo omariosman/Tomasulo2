@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 using namespace std;
+#include "ReservationStation.h"
 
 class InstructionAdd{
     private:
@@ -15,6 +16,7 @@ class InstructionAdd{
         int rd; 
         int status;
         int issue_clk;
+        ReservationStation rs;
 
     public:
     InstructionAdd();
@@ -31,6 +33,9 @@ class InstructionAdd{
     int get_status();
     int get_issue_clk();
     string get_name();
+    
+    ReservationStation get_reservation_station();
+    
     void set_rd(int _rd);
     void set_rs1(int _rs1);
     void set_rs2(int _rs2);
@@ -41,6 +46,8 @@ class InstructionAdd{
     void set_rd_name(string _rd_name);
     void set_rs1_name(string _rs1_name);
     void set_rs2_name(string _rs2_name);
+    
+    void set_reservation_station(ReservationStation _rs);
     void print_clk();
     
     
