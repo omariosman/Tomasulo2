@@ -41,6 +41,7 @@ class InstructionAdd{
     void set_rd_name(string _rd_name);
     void set_rs1_name(string _rs1_name);
     void set_rs2_name(string _rs2_name);
+    void print_clk();
     
     
 };

@@ -109,6 +109,9 @@ InstructionAdd::InstructionAdd(){
  
  
  
+ void InstructionAdd::print_clk(){
+ 	cout << "issue clk: " << get_issue_clk() << endl;
+ }
  
  
  

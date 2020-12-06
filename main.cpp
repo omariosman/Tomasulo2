@@ -237,6 +237,8 @@ int main(int argC, char **argv) {
         //Dynamic array for instruction objects
 		ReservationStation *rs_arr;
 		rs_arr = new ReservationStation[100];
+		
+		int very_temp = 2;
         while(true){
        		bool finish_flag = true;
         	/*
@@ -261,27 +263,12 @@ int main(int argC, char **argv) {
         				inst_add_arr[i].set_status(1); //issue
         				inst_add_arr[i].set_issue_clk(main_clk); //set issue clk
 						cout << "before: " << rs_arr[i].getVj() << endl;
+						
+						//checks operands ready or not
 						check_operands_ready(inst_add_arr[i], rs_arr[i], RegStats, RegFile);
 						cout << "after: " << rs_arr[i].getVj() << endl;
-						//checks operands ready or not
-						//not ready
-						/*
-						if (RegStats[inst_add_arr[i].get_rs1_name()] != "0"){
-							rs_arr[i].setQj(RegStats[inst_add_arr[i].get_rs1_name()]);
-							//cout << "lol: " << RegStats[inst_add_arr[i].get_rs1_name()]  << endl;
-							//cout << typeid(RegStats[inst_add_arr[i].get_rs1_name()]).name() << endl;
-							cout << "lol: " << inst_add_arr[i].get_rs1_name() << endl;
-						//ready
-						} else {
-							rs_arr[i].setVj(RegFile[inst_add_arr[i].get_rs1_name()]);
-							cout << "y: " << rs_arr[i].getVj() << endl;
-							rs_arr[i].setQj("0");
-
-			
-						}
 						
-					*/
-				
+			
 					
 				
 						//before execute
@@ -315,6 +302,15 @@ int main(int argC, char **argv) {
 			break;
 		}
 		main_clk++;
+		very_temp--;
+		if (very_temp == 0){
+			break;
+		}
+	}
+	
+	//output clocks
+	for (int i = 0; i < inst_add_counter; i++){
+		inst_add_arr[i].print_clk();	
 	}
         
   
