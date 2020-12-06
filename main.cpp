@@ -65,6 +65,30 @@ using namespace std;
 
 
 
+
+/*
+	Function: Check operands ready
+	Issue FP
+*/
+void check_operands_ready(InstructionAdd &inst_add_arr,ReservationStation &rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
+	//not ready
+	if (RegStats[inst_add_arr.get_rs1_name()] != "0"){
+			rs_arr.setQj(RegStats[inst_add_arr.get_rs1_name()]);
+	
+						
+	//ready
+	} else {
+			rs_arr.setVj(RegFile[inst_add_arr.get_rs1_name()]);
+			rs_arr.setQj("0");
+			cout << "from inside: " << rs_arr.getVj() << endl;
+			
+	}
+		
+
+ }
+
+
+
 int main(int argC, char **argv) {
     ResStatHandler object();
     ReservationStation load1;
@@ -77,6 +101,26 @@ int main(int argC, char **argv) {
     ReservationStation add2;
     ReservationStation div;
 
+	map<string, string> RegStats;
+	
+    RegStats["r0"] = "0";
+    RegStats["r1"] = "0";
+    RegStats["r2"] = "0";
+    RegStats["r3"] = "0";
+    RegStats["r4"] = "0";
+    RegStats["r5"] = "0";
+    RegStats["r6"] = "0";
+    RegStats["r7"] = "0";
+    RegStats["r8"] = "0";
+    RegStats["r9"] = "0";
+    RegStats["r10"] = "0";
+    RegStats["r11"] = "0";
+    RegStats["r12"] = "0";
+    RegStats["r13"] = "0";
+    RegStats["r14"] = "0";
+    RegStats["r15"] = "0";
+    
+    
     map<string, int> RegFile;
     
     RegFile["r0"] = 0;
@@ -156,21 +200,26 @@ int main(int argC, char **argv) {
         		//add rd rs1 rs2
         		string rd = my_inst[i][1]; //rd
         		int rd_val = RegFile[rd];
-        		addInst.set_rd(rd_val);
+        		addInst.set_rd_name(rd); //set name
+        		addInst.set_rd(rd_val); //set value
+        		
         		
         		string rs1 = my_inst[i][2]; //rs1
         		int rs1_val = RegFile[rs1];
-        		addInst.set_rs1(rs1_val);
+        		addInst.set_rs1_name(rs1); //set name
+        		addInst.set_rs1(rs1_val); //set value
         		
         		string rs2 = my_inst[i][3]; //rs2
         		int rs2_val = RegFile[rs2];
+        		addInst.set_rs2_name(rs2); //set name
         		addInst.set_rs2(rs2_val);        		
         		
         		//append the instruction object to an array
         		inst_add_arr[inst_add_counter] = addInst;
+        		
         		inst_add_counter++;
         		
-        	}
+        	} //start else if here
         }
         //printing info of 
         /*
@@ -183,10 +232,13 @@ int main(int argC, char **argv) {
        
         }
         */
-        int main_clk = 0;
-        ResStatHandler RS_handler();
-        
+        int main_clk = 1;
+        ResStatHandler RS_handler;
+        //Dynamic array for instruction objects
+		ReservationStation *rs_arr;
+		rs_arr = new ReservationStation[100];
         while(true){
+       		bool finish_flag = true;
         	/*
         	//inner loop
         		First step
@@ -201,38 +253,71 @@ int main(int argC, char **argv) {
         			//check issue conditions
         			//Empty RS
         			bool add_avail = RS_handler.is_add_available();
+
+					//if reservation station available
         			if (add_avail) {
-        				inst_add-arr[i].set_status(1); //issue
-        				inst_add-arr[i].set_issue_clk(main_clk);
-        			} else {
-        			
-        			}
-        		}
-        	}
+        				ReservationStation add = ReservationStation(); //instantiate reservation stations
+        				rs_arr[i] = add; //put it in an array
+        				inst_add_arr[i].set_status(1); //issue
+        				inst_add_arr[i].set_issue_clk(main_clk); //set issue clk
+						cout << "before: " << rs_arr[i].getVj() << endl;
+						check_operands_ready(inst_add_arr[i], rs_arr[i], RegStats, RegFile);
+						cout << "after: " << rs_arr[i].getVj() << endl;
+						//checks operands ready or not
+						//not ready
+						/*
+						if (RegStats[inst_add_arr[i].get_rs1_name()] != "0"){
+							rs_arr[i].setQj(RegStats[inst_add_arr[i].get_rs1_name()]);
+							//cout << "lol: " << RegStats[inst_add_arr[i].get_rs1_name()]  << endl;
+							//cout << typeid(RegStats[inst_add_arr[i].get_rs1_name()]).name() << endl;
+							cout << "lol: " << inst_add_arr[i].get_rs1_name() << endl;
+						//ready
+						} else {
+							rs_arr[i].setVj(RegFile[inst_add_arr[i].get_rs1_name()]);
+							cout << "y: " << rs_arr[i].getVj() << endl;
+							rs_arr[i].setQj("0");
+
+			
+						}
+						
+					*/
+				
+					
+				
+						//before execute
+						}
+					} else if (current_status == 1){
+			
+					}
+        	
         	
         	/*
         		Second Step
         		check issue condition for a new instruction
+        		loop over the arrays of the instructions, check their status, if all instructions finished, then set a flag to break the while loop
         	*/
-        	main_clk++;
-        }
+        	
+        	/*
+        		Logic to brak the infinite while loop
+        	*/
+        	//check add instructions array
+        	
+        	for (int i = 0; i < inst_add_counter; i++){
+        		int status = inst_add_arr[i].get_status();
+        		if (status != 3){
+        			finish_flag = false;
+        		}
+        	}
         
+		
+	}
+		if (finish_flag){
+			break;
+		}
+		main_clk++;
+	}
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+  
         
       
  

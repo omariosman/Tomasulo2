@@ -76,3 +76,47 @@ InstructionAdd::InstructionAdd(){
  	return issue_clk;
  }
  
+ 
+ //set rd name
+ void InstructionAdd::set_rd_name(string _rd_name){
+ 	rd_name = _rd_name;
+ }
+ //set rs1 name
+  void InstructionAdd::set_rs1_name(string _rs1_name){
+ 	rs1_name = _rs1_name;
+ }
+ //set rs2 name
+  void InstructionAdd::set_rs2_name(string _rs2_name){
+ 	rs2_name = _rs2_name;
+ }
+ 
+ //get rd name
+  string InstructionAdd::get_rd_name(){
+ 	return rd_name;
+ }
+ 
+ 
+ //get rs1 name
+  string InstructionAdd::get_rs1_name(){
+ 	return rs1_name;
+ }
+ 
+ 
+ //get rs2 name
+  string InstructionAdd::get_rs2_name(){
+ 	return rs2_name;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

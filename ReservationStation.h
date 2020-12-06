@@ -5,29 +5,33 @@ using namespace std;
 
 class ReservationStation{
 private:
-	int name;
+	int Id;
+	string name;
 	bool busy;
 	string op;
-	string Vj;
-	string Vk;
+	int Vj;
+	int Vk;
 	string Qj;
 	string Qk;
 	long addr;
 	int execution_cycles;
 public:
-	void setName(int nam);
+	ReservationStation();
+	void setId(int _Id);
+	void setName(string _name);
 	void setBusy(bool bus);
 	void setOp(string Op);
-	void setVj(string vj);
-	void setVk(string vk);
+	void setVj(int vj);
+	void setVk(int vk);
 	void setQj(string qj);
 	void setQk(string qk);
 	void setAddr(long add);
-	int getName();
+	int getId();
+	string getName();
 	bool getBusy();
 	string getOp();
-	string getVj();
-	string getVk();
+	int getVj();
+	int getVk();
 	string getQj();
 	string getQk();
 	long getAddr();
