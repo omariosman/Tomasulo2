@@ -3,6 +3,8 @@
 ReservationStation::ReservationStation(){
 	Vj = 0;
 	Vk = 0;
+	Qj = "0";
+	Qk = "0";
 }
 	void ReservationStation::setId(int _Id){
 		Id = _Id;

@@ -32,7 +32,7 @@ void check_operands_ready(Instruction &inst_arr,ReservationStation &rs_arr, map<
 	} else {
 			rs_arr.setVj(RegFile[inst_arr.get_rs1_name()]);
 			rs_arr.setQj("0");
-			cout << "from inside: " << rs_arr.getVj() << endl;
+			
 			
 	}
 		
@@ -195,7 +195,7 @@ int main(int argC, char **argv) {
 		ReservationStation *rs_arr;
 		rs_arr = new ReservationStation[100];
 		
-		int very_temp = 2;
+		int very_temp = 10;
 		int issue_counter = 0;
 		int backend_size = 0;
         while(true){
@@ -207,13 +207,14 @@ int main(int argC, char **argv) {
         		
         			//before execute
         			if (backend[i].get_type() == "add"){
-        			cout << "hell" << endl;
-        			cout << "RRSS" << rs_arr[backend[i].get_rs_id()].getQj() << endl;
+        			
+        			
         				if (rs_arr[backend[i].get_rs_id()].getQj() == "0" && rs_arr[backend[i].get_rs_id()].getQk() == "0"){
         					backend[i].set_start_execute_clk(main_clk);
+        				
         					backend[i].set_status(2); //executing
         					backend[i].set_rd(backend[i].get_rs1() + backend[i].get_rs2());
-        					cout << "status 1" << endl;
+        				
         				}	
         			
         			}
@@ -222,9 +223,9 @@ int main(int argC, char **argv) {
         			backend[i].decrement_execution_counter(); //decrement execution cycles
         			if (backend[i].get_execution_counter() == 0){
         			//finish executing
-        				backend[i].set_end_execute_clk(main_clk);
+        				backend[i].set_end_execute_clk(main_clk - 1);
         				backend[i].set_status(3);
-        				cout << "status 1" << endl;
+        			
         				
         			}
         			//write stage
@@ -233,7 +234,14 @@ int main(int argC, char **argv) {
         			RS_handler.incrementAdd();
         			RegFile[backend[i].get_rd_name()] = backend[i].get_rd();
         			RegStats[backend[i].get_rd_name()] = "0";
-        			cout << "status 1" << endl;
+        			
+        		}
+        	}
+        	//logic to break infinte loop
+        	bool cont_flag = false; //false means will break infinite loop
+        	for (int i = 0; i < backend_size; i++){
+        		if (backend[i].get_write_cycle() == 0){
+        			cont_flag = true;
         		}
         	}
         	
@@ -250,7 +258,7 @@ int main(int argC, char **argv) {
   
         			RS_handler.decrementAdd(); //decrement add RS
         			
-        			ReservationStation rs;
+        			ReservationStation rs = ReservationStation();
         			rs_arr[issue_counter] = rs;
         			inst_arr[issue_counter].set_rs_id(issue_counter);
         			backend[issue_counter] = inst_arr[issue_counter]; //append the issued instrucion to the backend array
@@ -266,22 +274,20 @@ int main(int argC, char **argv) {
         	} 
         	main_clk++;
         	very_temp--;
-        	if (very_temp == 0){
+        	if (cont_flag){
         	
         		break;
         	}
         	
   
-     
-        
-        
         
         }
-        cout << "Y: " << inst_counter << endl;
+        
         //test
-        for (int i = 0; i < inst_counter; i++){
-        cout << "here: " << endl;
-        	cout << "rs id: " << inst_arr[i].get_rs_id() << endl;
+        for (int i = 0; i < backend_size; i++){
+        cout << "Instruction: " << i + 1 << endl;
+        	backend[i].print_info();
+        	cout << endl;
         }
 
         

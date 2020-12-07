@@ -10,6 +10,7 @@ Instruction::Instruction(){
 	rs2_name = "";
 	rd_name = "";
 	issue_clk = 0;
+	write_cycle = 0;
 	
 }
 
@@ -200,11 +201,13 @@ void Instruction::set_execution_cycles(int c){
  }
  
  void Instruction::print_info(){
- 	cout << "instruction status: " << get_status() << endl;
  	cout << "rs1: " << rs1_name << " " << rs1 << endl;
  	cout << "rs2: " << rs2_name << " " << rs2 << endl;
  	cout << "rd: " << rd_name << " " << rd << endl;
  	cout << "issue clock: " << issue_clk << endl;
+ 	cout << "start execute clock: " << start_execute_clk<< endl;
+ 	cout << "end execute clock: " << end_execute_clk << endl;
+ 	cout << "write clock: " << write_cycle << endl;
  	
  	
  }
