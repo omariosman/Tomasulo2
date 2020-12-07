@@ -210,9 +210,10 @@ int main(int argC, char **argv) {
         			
         			
         				if (rs_arr[backend[i].get_rs_id()].getQj() == "0" && rs_arr[backend[i].get_rs_id()].getQk() == "0"){
-        					backend[i].set_start_execute_clk(main_clk);
+        					
         				
         					backend[i].set_status(2); //executing
+        					backend[i].set_start_execute_clk(main_clk);
         					backend[i].set_rd(backend[i].get_rs1() + backend[i].get_rs2());
         				
         				}	
@@ -234,6 +235,7 @@ int main(int argC, char **argv) {
         			RS_handler.incrementAdd();
         			RegFile[backend[i].get_rd_name()] = backend[i].get_rd();
         			RegStats[backend[i].get_rd_name()] = "0";
+        			backend[i].set_status(4);
         			
         		}
         	}
