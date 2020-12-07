@@ -9,6 +9,7 @@ Instruction::Instruction(){
 	rs1_name = "";
 	rs2_name = "";
 	rd_name = "";
+	issue_clk = 0;
 	
 }
 
@@ -54,6 +55,13 @@ Instruction::Instruction(){
  //set issue clk
   void Instruction::set_issue_clk(int _issue_clk){
  	issue_clk = _issue_clk;
+ }
+ 
+ 
+   
+ //set rs_id
+  void Instruction::set_rs_id(int _id){
+ 	rs_id = _id;
  }
  
  
@@ -125,11 +133,37 @@ Instruction::Instruction(){
  	return rs2_name;
  }
  
+ int Instruction::get_start_execute_clk(){
+ 	return start_execute_clk;
+ }
+ 
+  int Instruction::get_end_execute_clk(){
+ 	return end_execute_clk;
+ }
+ 
+  int Instruction::get_execution_cycles(){
+ 	return execution_cycles;
+ }
+ 
+  int Instruction::get_execution_counter(){
+ 	return execution_counter;
+ }
+ 
+
+ 
+  int Instruction::get_write_cycle(){
+ 	return write_cycle;
+ }
+
  string Instruction::get_type(){
  	return type;
  }
  
  
+ 
+ int Instruction::get_rs_id(){
+ 	return rs_id;
+ }
  
  void Instruction::print_clk(){
  	cout << "issue clk: " << get_issue_clk() << endl;
@@ -139,11 +173,39 @@ Instruction::Instruction(){
  	rs = _rs;
  }
  
+ void Instruction::set_start_execute_clk(int c){
+ 	start_execute_clk = c;
+ }
+ 
+  void Instruction::set_end_execute_clk(int c){
+ 	end_execute_clk = c;
+ }
+ 
+ 
+void Instruction::set_execution_cycles(int c){
+ 	execution_cycles = c;
+ }
+ 
+ void Instruction::set_execution_counter(int c){
+ 	execution_counter = c;
+ }
+ 
+ 
+  void Instruction::set_write_cycle(int c){
+ 	write_cycle = c;
+ }
+
+ void Instruction::decrement_execution_counter(){
+ 	execution_counter--;
+ }
+ 
  void Instruction::print_info(){
+ 	cout << "instruction status: " << get_status() << endl;
  	cout << "rs1: " << rs1_name << " " << rs1 << endl;
  	cout << "rs2: " << rs2_name << " " << rs2 << endl;
  	cout << "rd: " << rd_name << " " << rd << endl;
  	cout << "issue clock: " << issue_clk << endl;
+ 	
  	
  }
  

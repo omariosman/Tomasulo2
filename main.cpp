@@ -21,25 +21,25 @@ using namespace std;
 	Function: Check operands ready
 	Issue FP
 */
-/*
-void check_operands_ready(InstructionAdd *inst_add_arr,ReservationStation *rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
+
+void check_operands_ready(Instruction &inst_arr,ReservationStation &rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
 	//not ready
-	if (RegStats[inst_add_arr->get_rs1_name()] != "0"){
-			rs_arr->setQj(RegStats[inst_add_arr->get_rs1_name()]);
+	if (RegStats[inst_arr.get_rs1_name()] != "0"){
+			rs_arr.setQj(RegStats[inst_arr.get_rs1_name()]);
 	
 						
 	//ready
 	} else {
-			rs_arr->setVj(RegFile[inst_add_arr->get_rs1_name()]);
-			rs_arr->setQj("0");
-			cout << "from inside: " << rs_arr->getVj() << endl;
+			rs_arr.setVj(RegFile[inst_arr.get_rs1_name()]);
+			rs_arr.setQj("0");
+			cout << "from inside: " << rs_arr.getVj() << endl;
 			
 	}
 		
 
  }
 
-*/
+
 
 int main(int argC, char **argv) {
     ResStatHandler object();
@@ -149,7 +149,6 @@ int main(int argC, char **argv) {
 		  //Loop to instantiate object for every instruction
 		  
 		for (int i = 0; i < my_inst.size(); i++){
-		cout << "Me" << endl;
 		   	for (int j = 0; j < my_inst[i].size(); j++) {
 		   		Instruction inst = Instruction();
 		   		inst.set_type(my_inst[i][0]);
@@ -167,9 +166,11 @@ int main(int argC, char **argv) {
 		   			inst.set_rs2_name(my_inst[i][3]);
 		   			inst.set_rs2(RegFile[my_inst[i][2]]);
 		   			
+		   			inst.set_execution_cycles(2);
+		   			inst.set_execution_counter(2);
 		   			inst_arr[i] = inst;
 		   			
-		   			cout << "c: " << inst_counter << endl; 
+		   		
 		   			
 		   		} 
 		   	}
@@ -178,6 +179,11 @@ int main(int argC, char **argv) {
 		   }
 		   
 		   
+		   
+		   		  
+		//Dynamic array for instruction objects
+		Instruction *backend;
+		backend = new Instruction[100];
 		   
 		
 
@@ -191,9 +197,40 @@ int main(int argC, char **argv) {
 		
 		int very_temp = 2;
 		int issue_counter = 0;
+		int backend_size = 0;
         while(true){
-        	
         	//first step
+        	
+        	for (int i = 0; i < backend_size; i++){
+        		//check type of instruction
+        		if (backend[i].get_status() == 1){
+        			//before execute
+        			if (backend[i].get_type() == "add"){
+        				if (rs_arr[backend[i].get_rs_id()].getQj() == "0" && rs_arr[backend[i].get_rs_id()].getQk() == "0"){
+        					backend[i].set_start_execute_clk(main_clk);
+        					backend[i].set_status(2); //executing
+        					backend[i].set_rd(backend[i].get_rs1() + backend[i].get_rs2());
+        					
+        				}	
+        			
+        			}
+        			//executing stage
+        		} else if (backend[i].get_status() == 2) {
+        			backend[i].decrement_execution_counter(); //decrement execution cycles
+        			if (backend[i].get_execution_counter() == 0){
+        			//finish executing
+        				backend[i].set_end_execute_clk(main_clk);
+        				backend[i].set_status(3);
+        				
+        			}
+        			//write stage
+        		} else if (backend[i].get_status() == 3){
+        			backend[i].set_write_cycle(main_clk);
+        			RS_handler.incrementAdd();
+        			RegFile[backend[i].get_rd_name()] = backend[i].get_rd();
+        			RegStats[backend[i].get_rd_name()] = "0";
+        		}
+        	}
         	
         	
         	//second step [issue a new instruction]
@@ -205,7 +242,18 @@ int main(int argC, char **argv) {
         		if (check_avail){
         			inst_arr[issue_counter].set_status(1);
         			inst_arr[issue_counter].set_issue_clk(main_clk);
+        			backend[issue_counter] = inst_arr[issue_counter]; //append the issued instrucion to the backend array
+        			backend_size++;
         			RS_handler.decrementAdd(); //decrement add RS
+        			
+        			ReservationStation rs;
+        			rs_arr[issue_counter] = rs;
+        			inst_arr[issue_counter].set_rs_id(issue_counter);
+        			
+        			//check operand ready and o some creepy things after issuing
+        			cout << "before: " << rs_arr[issue_counter].getVj() << endl;
+        			check_operands_ready(inst_arr[issue_counter], rs_arr[issue_counter], RegStats,RegFile);
+        			cout << "after: " << rs_arr[issue_counter].getVj() << endl;
         			issue_counter++;
         		}
         		
@@ -228,7 +276,7 @@ int main(int argC, char **argv) {
         //test
         for (int i = 0; i < inst_counter; i++){
         cout << "here: " << endl;
-        	inst_arr[i].print_info();
+        	cout << "rs id: " << inst_arr[i].get_rs_id() << endl;
         }
 
         
