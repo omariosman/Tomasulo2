@@ -4,12 +4,7 @@
 #include<sstream>
 #include<vector>
 #include<map>
-#include "InstructionAdd.h"
-#include "InstructionDiv.h"
-#include "InstructionBeq.h"
-#include "InstructionJal.h"
-#include "InstructionLoad.h"
-#include "InstructionStore.h"
+#include "Instruction.h"
 #include "ResStatHandler.h"
 #include "ReservationStation.h"
 
@@ -26,6 +21,7 @@ using namespace std;
 	Function: Check operands ready
 	Issue FP
 */
+/*
 void check_operands_ready(InstructionAdd *inst_add_arr,ReservationStation *rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
 	//not ready
 	if (RegStats[inst_add_arr->get_rs1_name()] != "0"){
@@ -43,7 +39,7 @@ void check_operands_ready(InstructionAdd *inst_add_arr,ReservationStation *rs_ar
 
  }
 
-
+*/
 
 int main(int argC, char **argv) {
     ResStatHandler object();
@@ -143,76 +139,49 @@ int main(int argC, char **argv) {
 		  {
 			cerr << "\n";
 		  }
+	
 		  
-		//   for (int i = 0; i < my_inst.size(); i++){
-		//   	for (int j = 0; j < my_inst[i].size(); j++) {
-		//   		cout << my_inst[i][j] << " ";
-		//   	}
-		//   	cout << endl;
-		//   }
+		  
+		//Dynamic array for instruction objects
+		Instruction *inst_arr;
+		inst_arr = new Instruction[100];
+		int inst_counter = 0; 
+		  //Loop to instantiate object for every instruction
+		  
+		for (int i = 0; i < my_inst.size(); i++){
+		cout << "Me" << endl;
+		   	for (int j = 0; j < my_inst[i].size(); j++) {
+		   		Instruction inst = Instruction();
+		   		inst.set_type(my_inst[i][0]);
+		   		if (inst.get_type() == "add"){
+		   			
+		   			//set rd
+		   			inst.set_rd_name(my_inst[i][1]);
+		   			inst.set_rd(RegFile[my_inst[i][1]]);
+		   			
+		   			//set rs1
+		   			inst.set_rs1_name(my_inst[i][2]);
+		   			inst.set_rs1(RegFile[my_inst[i][2]]);
+		   			
+		   			//set rs2
+		   			inst.set_rs2_name(my_inst[i][3]);
+		   			inst.set_rs2(RegFile[my_inst[i][2]]);
+		   			
+		   			inst_arr[i] = inst;
+		   			
+		   			cout << "c: " << inst_counter << endl; 
+		   			
+		   		} 
+		   	}
+		   	inst_counter++;
+		 
+		   }
+		   
+		   
+		   
 		
 
-		//Dynamic array for instruction objects
-		InstructionAdd *inst_add_arr;
-		inst_add_arr = new InstructionAdd[100];
-		
-		
-		int inst_add_counter = 0;
-		int general_counter = 0;
-		
-        for (int i = 0; i < my_inst.size(); i++){
-        	if(inst_type[my_inst[i][0]] == 0){ //add
-        		//call opbject of add instruction
-        		InstructionAdd addInst;
-        	
-        		string name = my_inst[i][0];
-        		addInst.set_name(name);
-        		
-        		//add rd rs1 rs2
-        		string rd = my_inst[i][1]; //rd
-        		int rd_val = RegFile[rd];
-        		addInst.set_rd_name(rd); //set name
-        		addInst.set_rd(rd_val); //set value
-        		
-        		
-        		string rs1 = my_inst[i][2]; //rs1
-        		int rs1_val = RegFile[rs1];
-        		addInst.set_rs1_name(rs1); //set name
-        		addInst.set_rs1(rs1_val); //set value
-        		
-        		string rs2 = my_inst[i][3]; //rs2
-        		int rs2_val = RegFile[rs2];
-        		addInst.set_rs2_name(rs2); //set name
-        		addInst.set_rs2(rs2_val);        		
-        		
-        		//instantiate an object from general instruction class and associate the add instruction to it and set add flag
-        
-        		GeneralInstruction general_instruction;
-        		general_instruction.set_instruction_add(addInst);
-        		general_instruction.set_add_flag();
-        		
-        		//put the instruction into the map
-        		general_inst_map[general_counter] = general_instruction;
-        		general_counter++;
-        		
-        		//append the instruction object to an array
-        		inst_add_arr[inst_add_counter] = addInst;
-        		inst_add_counter++;
-        		
-        	} //start else if here
-        }
-        //printing info of 
-        /*
-        for (int i = 0; i < inst_add_counter; i++){
-        	cout << "name: " << inst_add_arr[i].get_name() << endl;
-        	cout << "rd: " << inst_add_arr[i].get_rd() << endl;
-        	cout << "rs1: " << inst_add_arr[i].get_rs1() << endl;
-        	cout << "rs2: " << inst_add_arr[i].get_rs2() << endl;
-        	cout << "Next Instruction" << endl;
-       
-        }
-        */
-        
+
 
         int main_clk = 1;
         ResStatHandler RS_handler;
@@ -223,56 +192,45 @@ int main(int argC, char **argv) {
 		int very_temp = 2;
 		int issue_counter = 0;
         while(true){
-       		bool finish_flag = true;
         	
-        	int my_type = general_inst_map[issue_counter].determine_type();
-        	switch(my_type){
-        		case (0): //add
-        			//check issue for FP instruction
-        			{
-        			bool add_avail = RS_handler.is_add_available(); //check if RS empty
-
-					//if reservation station available
-        			if (add_avail) {
-        				ReservationStation add = ReservationStation(); //instantiate reservation stations
-        				RS_handler.decrementAdd();
-        				general_inst_map[issue_counter].get_instruction_add().set_reservation_station(add); //put it in an array
-        				general_inst_map[issue_counter].get_instruction_add().set_status(1); //issued
-        				general_inst_map[issue_counter].get_instruction_add().set_issue_clk(main_clk); //set issue clk
-						
-						
-						//checks operands ready or not
-						InstructionAdd temp_inst = general_inst_map[issue_counter].get_instruction_add();
-						ReservationStation temp_rs = general_inst_map[issue_counter].get_instruction_add().get_reservation_station();
-						cout << "before: " << temp_rs.getVj() << endl;
-						check_operands_ready(&temp_inst, &temp_rs, RegStats, RegFile);
-						general_inst_map[issue_counter].set_instruction_add(temp_inst);
-						general_inst_map[issue_counter].get_instruction_add().set_reservation_station(temp_rs);
-						cout << "Yo: " << general_inst_map[issue_counter].get_instruction_add().get_reservation_station().getVj() << endl;
-						cout << "after: " << temp_rs.getVj() << endl;	
-				
-						//before execute
-						}
-
-        			break;
-  }
-        		default:
-        			cout << "Type not defined" << endl;
-        			exit(0);
+        	//first step
+        	
+        	
+        	//second step [issue a new instruction]
+        	string my_type = inst_arr[issue_counter].get_type(); //check
+        	
+        	if (my_type == "add"){
+        		//check reservation station
+        		bool check_avail = RS_handler.is_add_available();
+        		if (check_avail){
+        			inst_arr[issue_counter].set_status(1);
+        			inst_arr[issue_counter].set_issue_clk(main_clk);
+        			RS_handler.decrementAdd(); //decrement add RS
+        			issue_counter++;
+        		}
+        		
+        		
+        	} 
+        	main_clk++;
+        	very_temp--;
+        	if (very_temp == 0){
+        	
+        		break;
         	}
+        	
+  
+     
+        
+        
+        
+        }
+        cout << "Y: " << inst_counter << endl;
+        //test
+        for (int i = 0; i < inst_counter; i++){
+        cout << "here: " << endl;
+        	inst_arr[i].print_info();
+        }
 
-		main_clk++;
-		very_temp--;
-		if (very_temp == 0){
-			break;
-		}
-		issue_counter++;
-	}
-	
-	//output clocks
-	for (int i = 0; i < inst_add_counter; i++){
-		inst_add_arr[i].print_clk();	
-	}
         
 
  
