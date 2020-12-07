@@ -204,13 +204,16 @@ int main(int argC, char **argv) {
         	for (int i = 0; i < backend_size; i++){
         		//check type of instruction
         		if (backend[i].get_status() == 1){
+        		
         			//before execute
         			if (backend[i].get_type() == "add"){
+        			cout << "hell" << endl;
+        			cout << "RRSS" << rs_arr[backend[i].get_rs_id()].getQj() << endl;
         				if (rs_arr[backend[i].get_rs_id()].getQj() == "0" && rs_arr[backend[i].get_rs_id()].getQk() == "0"){
         					backend[i].set_start_execute_clk(main_clk);
         					backend[i].set_status(2); //executing
         					backend[i].set_rd(backend[i].get_rs1() + backend[i].get_rs2());
-        					
+        					cout << "status 1" << endl;
         				}	
         			
         			}
@@ -221,6 +224,7 @@ int main(int argC, char **argv) {
         			//finish executing
         				backend[i].set_end_execute_clk(main_clk);
         				backend[i].set_status(3);
+        				cout << "status 1" << endl;
         				
         			}
         			//write stage
@@ -229,6 +233,7 @@ int main(int argC, char **argv) {
         			RS_handler.incrementAdd();
         			RegFile[backend[i].get_rd_name()] = backend[i].get_rd();
         			RegStats[backend[i].get_rd_name()] = "0";
+        			cout << "status 1" << endl;
         		}
         	}
         	
@@ -242,18 +247,18 @@ int main(int argC, char **argv) {
         		if (check_avail){
         			inst_arr[issue_counter].set_status(1);
         			inst_arr[issue_counter].set_issue_clk(main_clk);
-        			backend[issue_counter] = inst_arr[issue_counter]; //append the issued instrucion to the backend array
-        			backend_size++;
+  
         			RS_handler.decrementAdd(); //decrement add RS
         			
         			ReservationStation rs;
         			rs_arr[issue_counter] = rs;
         			inst_arr[issue_counter].set_rs_id(issue_counter);
-        			
+        			backend[issue_counter] = inst_arr[issue_counter]; //append the issued instrucion to the backend array
+        			backend_size++;
         			//check operand ready and o some creepy things after issuing
-        			cout << "before: " << rs_arr[issue_counter].getVj() << endl;
+        			
         			check_operands_ready(inst_arr[issue_counter], rs_arr[issue_counter], RegStats,RegFile);
-        			cout << "after: " << rs_arr[issue_counter].getVj() << endl;
+        			
         			issue_counter++;
         		}
         		
