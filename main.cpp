@@ -22,19 +22,35 @@ using namespace std;
 	Issue FP
 */
 
-void check_operands_ready(Instruction &inst_arr,ReservationStation &rs_arr, map<string, string> &RegStats, map<string, int> &RegFile){
-	//not ready
-	if (RegStats[inst_arr.get_rs1_name()] != "0"){
+//needs to be completed witih Qk and Vk
+void check_operands_ready(Instruction &inst_arr,ReservationStation &rs_arr, map<string, int> &RegStats, map<string, int> &RegFile){
+	//j not ready
+	if (RegStats[inst_arr.get_rs1_name()] != -1){ //-1 means that the regstats not available
 			rs_arr.setQj(RegStats[inst_arr.get_rs1_name()]);
 	
 						
-	//ready
+	//j ready
 	} else {
 			rs_arr.setVj(RegFile[inst_arr.get_rs1_name()]);
-			rs_arr.setQj("0");
+			rs_arr.setQj(-1);
 			
 			
 	}
+	
+	//k not ready
+	if (RegStats[inst_arr.get_rs2_name()] != -1){
+			rs_arr.setQk(RegStats[inst_arr.get_rs2_name()]);
+	
+						
+	//k ready
+	} else {
+			rs_arr.setVk(RegFile[inst_arr.get_rs2_name()]);
+			rs_arr.setQk(-1);
+			
+			
+	}
+	
+	
 		
 
  }
@@ -56,24 +72,24 @@ int main(int argC, char **argv) {
 
 
 
-	map<string, string> RegStats;
+	map<string, int> RegStats;
 	
-    RegStats["r0"] = "0";
-    RegStats["r1"] = "0";
-    RegStats["r2"] = "0";
-    RegStats["r3"] = "0";
-    RegStats["r4"] = "0";
-    RegStats["r5"] = "0";
-    RegStats["r6"] = "0";
-    RegStats["r7"] = "0";
-    RegStats["r8"] = "0";
-    RegStats["r9"] = "0";
-    RegStats["r10"] = "0";
-    RegStats["r11"] = "0";
-    RegStats["r12"] = "0";
-    RegStats["r13"] = "0";
-    RegStats["r14"] = "0";
-    RegStats["r15"] = "0";
+    RegStats["r0"] = -1;
+    RegStats["r1"] = -1;
+    RegStats["r2"] = -1;
+    RegStats["r3"] = -1;
+    RegStats["r4"] = -1;
+    RegStats["r5"] = -1;
+    RegStats["r6"] = -1;
+    RegStats["r7"] = -1;
+    RegStats["r8"] = -1;
+    RegStats["r9"] = -1;
+    RegStats["r10"] = -1;
+    RegStats["r11"] = -1;
+    RegStats["r12"] = -1;
+    RegStats["r13"] = -1;
+    RegStats["r14"] = -1;
+    RegStats["r15"] = -1;
     
     
     map<string, int> RegFile;
@@ -164,7 +180,7 @@ int main(int argC, char **argv) {
 		   			
 		   			//set rs2
 		   			inst.set_rs2_name(my_inst[i][3]);
-		   			inst.set_rs2(RegFile[my_inst[i][2]]);
+		   			inst.set_rs2(RegFile[my_inst[i][3]]);
 		   			
 		   			inst.set_execution_cycles(2);
 		   			inst.set_execution_counter(2);
@@ -198,24 +214,31 @@ int main(int argC, char **argv) {
 		int very_temp = 10;
 		int issue_counter = 0;
 		int backend_size = 0;
+		int while_counter = my_inst.size() + 6;
         while(true){
         	//first step
         	
         	for (int i = 0; i < backend_size; i++){
+        	
+        		
         		//check type of instruction
+
         		if (backend[i].get_status() == 1){
         		
         			//before execute
+        			
         			if (backend[i].get_type() == "add"){
         			
-        			
-        				if (rs_arr[backend[i].get_rs_id()].getQj() == "0" && rs_arr[backend[i].get_rs_id()].getQk() == "0"){
+        				
+        				if (rs_arr[backend[i].get_rs_id()].getQj() == -1 && rs_arr[backend[i].get_rs_id()].getQk() == -1){
         					
         				
         					backend[i].set_status(2); //executing
         					backend[i].set_start_execute_clk(main_clk);
+        					backend[i].set_end_execute_clk(main_clk + backend[i].get_execution_cycles() - 1);
         					backend[i].set_rd(backend[i].get_rs1() + backend[i].get_rs2());
         				
+        					
         				}	
         			
         			}
@@ -224,33 +247,54 @@ int main(int argC, char **argv) {
         			backend[i].decrement_execution_counter(); //decrement execution cycles
         			if (backend[i].get_execution_counter() == 0){
         			//finish executing
-        				backend[i].set_end_execute_clk(main_clk - 1);
+        				
         				backend[i].set_status(3);
         			
         				
         			}
         			//write stage
         		} else if (backend[i].get_status() == 3){
-        			backend[i].set_write_cycle(main_clk);
+        			backend[i].set_write_cycle(main_clk - 1);
         			RS_handler.incrementAdd();
         			RegFile[backend[i].get_rd_name()] = backend[i].get_rd();
-        			RegStats[backend[i].get_rd_name()] = "0";
+        			RegStats[backend[i].get_rd_name()] = -1;
         			backend[i].set_status(4);
+        			for (int k = 0; k < backend_size; k++){
+        				if (rs_arr[backend[k].get_rs_id()].getQj()== backend[i].get_rs_id()) {
+        					
+        					rs_arr[backend[k].get_rs_id()].setVj(backend[i].get_rd());
+        					rs_arr[backend[k].get_rs_id()].setQj(-1);
+        					
+        					
+        				}
+        				
+        				if (rs_arr[backend[k].get_rs_id()].getQk() == backend[i].get_rs_id()) {
+        					rs_arr[backend[k].get_rs_id()].setVk(backend[i].get_rd());
+        					rs_arr[backend[k].get_rs_id()].setQk(-1);
+        				
+        				}       				
+        			}
         			
         		}
         	}
-        	//logic to break infinte loop
         	bool cont_flag = false; //false means will break infinite loop
+        	//logic to break infinte loop
+        	if (backend_size == 0) {
+        		cont_flag = true; //special case for first time
+        	}
+        	
         	for (int i = 0; i < backend_size; i++){
+
         		if (backend[i].get_write_cycle() == 0){
         			cont_flag = true;
         		}
         	}
         	
         	
+        	
         	//second step [issue a new instruction]
         	string my_type = inst_arr[issue_counter].get_type(); //check
-        	
+        
         	if (my_type == "add"){
         		//check reservation station
         		bool check_avail = RS_handler.is_add_available();
@@ -265,18 +309,22 @@ int main(int argC, char **argv) {
         			inst_arr[issue_counter].set_rs_id(issue_counter);
         			backend[issue_counter] = inst_arr[issue_counter]; //append the issued instrucion to the backend array
         			backend_size++;
+        	
         			//check operand ready and o some creepy things after issuing
         			
         			check_operands_ready(inst_arr[issue_counter], rs_arr[issue_counter], RegStats,RegFile);
         			
+        			RegStats[backend[issue_counter].get_rd_name()] = backend[issue_counter].get_rs_id();
         			issue_counter++;
         		}
         		
         		
         	} 
         	main_clk++;
+        	while_counter--;
         	very_temp--;
-        	if (cont_flag){
+        	
+        	if (!cont_flag){
         	
         		break;
         	}

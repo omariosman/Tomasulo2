@@ -11,8 +11,8 @@ private:
 	string op;
 	int Vj;
 	int Vk;
-	string Qj;
-	string Qk;
+	int Qj;
+	int Qk;
 	long addr;
 	int execution_cycles;
 public:
@@ -23,8 +23,8 @@ public:
 	void setOp(string Op);
 	void setVj(int vj);
 	void setVk(int vk);
-	void setQj(string qj);
-	void setQk(string qk);
+	void setQj(int qj);
+	void setQk(int qk);
 	void setAddr(long add);
 	int getId();
 	string getName();
@@ -32,8 +32,8 @@ public:
 	string getOp();
 	int getVj();
 	int getVk();
-	string getQj();
-	string getQk();
+	int getQj();
+	int getQk();
 	long getAddr();
 	void set_execution_cycles(int _execution_cycles);
 	int get_execution_cycles();

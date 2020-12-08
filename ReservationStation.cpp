@@ -3,8 +3,8 @@
 ReservationStation::ReservationStation(){
 	Vj = 0;
 	Vk = 0;
-	Qj = "0";
-	Qk = "0";
+	Qj = -1;
+	Qk = -1;
 }
 	void ReservationStation::setId(int _Id){
 		Id = _Id;
@@ -26,10 +26,10 @@ ReservationStation::ReservationStation(){
 	void ReservationStation::setVk(int vk){
 		Vk = vk;
 	}
-	void ReservationStation::setQj(string qj){
+	void ReservationStation::setQj(int qj){
 		Qj = qj;
 	}
-	void ReservationStation::setQk(string qk){
+	void ReservationStation::setQk(int qk){
 		Qk = qk;
 	}
 	void ReservationStation::setAddr(long add){
@@ -41,8 +41,8 @@ ReservationStation::ReservationStation(){
 	string ReservationStation::getOp(){return op;}
 	int ReservationStation::getVj(){return Vj;}
 	int ReservationStation::getVk(){return Vk;}
-	string ReservationStation::getQj(){return Qj;}
-	string ReservationStation::getQk(){return Qk;}
+	int ReservationStation::getQj(){return Qj;}
+	int ReservationStation::getQk(){return Qk;}
 	long ReservationStation::getAddr(){return addr;}
 
 //set execution cycles	
